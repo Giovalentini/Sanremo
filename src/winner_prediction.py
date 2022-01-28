@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.compose import ColumnTransformer
-sanremo_df = pd.read_excel("G:/Il mio Drive/Sanremo/sanremo_df.xlsx")
+sanremo_df = pd.read_excel("sanremo_df.xlsx")
 
 ##Preparation
 sanremo_df.drop(['instrumentalness','Unnamed: 0'],inplace=True,axis=1)
@@ -74,5 +74,5 @@ def apply_svc(svc_model):
 
 svc1=SVC(probability=True) #Default hyperparameters
 svc2=SVC(kernel='rbf', probability=True)
-prev_vincitore_svc = apply_svc(svc)
+prev_vincitore_svc = apply_svc(svc1)
 prev_vincitore_svc2 = apply_svc(svc2)
