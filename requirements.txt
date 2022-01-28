@@ -1,7 +1,7 @@
 lightgbm==3.1.1
 matplotlib==3.4.1
 numpy==1.20.1
-spotipy
+spotipy==2.16.1
 openpyxl
 pandas==1.2.1
 pickleshare==0.7.5
