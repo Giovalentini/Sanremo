@@ -10,9 +10,10 @@ os.environ['SPOTIPY_CLIENT_ID'] = '65856b2827c94410a969dc084bcd1c13'
 os.environ['SPOTIPY_CLIENT_SECRET'] = '4a749940bc164fa3892c83e7a2bbfcbe'
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
-#ids of all playlists - order from 2021 to 2010
-#37i9dQZF1DWVQfeA9N7Q0g
-lista_uri=['spotify:playlist:61QFMC1ntb7BrXveI3f4cX',
+#ids of all playlists - order from 2022 to 2010
+#3a67CvngL5t42BVvLgg8u5
+lista_uri=['spotify:playlist:3a67CvngL5t42BVvLgg8u5',
+           'spotify:playlist:61QFMC1ntb7BrXveI3f4cX',
            'spotify:playlist:0QLiQIBYm1m1wxO6O1P8I5',
            'spotify:playlist:4bBjCi2q4c1Ry5DELrn1LM',
            'spotify:playlist:29qBlT6rlJtpKlaYhaUuK3',
@@ -26,7 +27,7 @@ lista_uri=['spotify:playlist:61QFMC1ntb7BrXveI3f4cX',
            'spotify:playlist:2zHJQOP880x7aWTkZqqNog']
 
 anno_inizio=2010
-anno_fine = 2021
+anno_fine = 2022
 years=[i for i in reversed(range(anno_inizio,anno_fine+1))]
 
 #lista_uri=['spotify:playlist:13TbnOluHonxsVvSWkL7YF'] #1990-2021 in un'unica playlist
@@ -47,8 +48,8 @@ def get_ids_from_playlist(lista_uri):
 ids_list, track_list, artist_list = get_ids_from_playlist(lista_uri)
 
 #adjust list length to include only bigs (some playlists include "esordienti" too)
-bigs_per_year = (26,24,24,19,22,18,19,11,13,14,14,14)
-tot_years = 12
+bigs_per_year = (24,26,24,24,19,22,18,19,11,13,14,14,14)
+tot_years = 13
 for i in range(tot_years):
     ids_list[i]    = ids_list[i][:bigs_per_year[i]]
     track_list[i]  = track_list[i][:bigs_per_year[i]]
@@ -58,21 +59,25 @@ for i in range(tot_years):
 sanremo_df = pd.DataFrame()
 for i,lista in enumerate(ids_list):
     for track_id in lista:
-        song = spotify.audio_features(track_id)
-        sanremo_df = sanremo_df.append({'danceability': song[0]['danceability'],
-                           'energy': song[0]['energy'],
-                           'key': song[0]['key'],
-                           'loudness': song[0]['loudness'],
-                           'mode': song[0]['mode'],
-                           'speechiness': song[0]['speechiness'],
-                           'acousticness': song[0]['acousticness'],
-                           'instrumentalness': song[0]['instrumentalness'],
-                           'liveness': song[0]['liveness'],
-                           'valence': song[0]['valence'],
-                           'tempo': song[0]['tempo'],
-                           'duration_ms': song[0]['duration_ms'],
-                           'time_signature': song[0]['time_signature'],
-                           'year': years[i]}, ignore_index=True)
+        try:
+            song = spotify.audio_features(track_id)
+            sanremo_df = sanremo_df.append({'danceability': song[0]['danceability'],
+                               'energy': song[0]['energy'],
+                               'key': song[0]['key'],
+                               'loudness': song[0]['loudness'],
+                               'mode': song[0]['mode'],
+                               'speechiness': song[0]['speechiness'],
+                               'acousticness': song[0]['acousticness'],
+                               'instrumentalness': song[0]['instrumentalness'],
+                               'liveness': song[0]['liveness'],
+                               'valence': song[0]['valence'],
+                               'tempo': song[0]['tempo'],
+                               'duration_ms': song[0]['duration_ms'],
+                               'time_signature': song[0]['time_signature'],
+                               'year': years[i]}, ignore_index=True)
+        except: print(track_id,song)
+
+#there's one track_id which doesn't work - 4WJVLEkcMMV2tHo1Bd65VN
 
 #add winner column - first of each playlist is a winner except for 2021
 bigs_per_year_cum = np.cumsum(bigs_per_year)
@@ -93,13 +98,13 @@ sanremo_df['song']=unique_track_list
 sanremo_df['artist']=unique_artist_list
 
 #add 2021 winner
-sanremo_df.loc[sanremo_df['song']=='ZITTI E BUONI','winner']=1
+#sanremo_df.loc[sanremo_df['song']=='ZITTI E BUONI','winner']=1
 
 #manually impute artist type and sex
 # Type: 1 for solo artist, 2 for collab or duet, 3 for band
 # Sex: 0 for male, 1 for female, 2 for mix/other (considered frontman in bands to elige sex)
-# sanremo_df[['song','artist']].to_excel("G:/Il mio Drive/Sanremo/artist_sex_type.xlsx")
-artist_sex_type = pd.read_excel("G:/Il mio Drive/Sanremo/artist_sex_type.xlsx")
+#sanremo_df[['song','artist']].to_excel(r"C:\Users\g.valentini\Documents\Projects\Sanremo\src\artist_sex_type.xlsx")
+artist_sex_type = pd.read_excel(r"C:\Users\g.valentini\Documents\Projects\Sanremo\src\artist_sex_type.xlsx")
 sanremo_df = pd.merge(sanremo_df,artist_sex_type,on=['song','artist'])
 
-#sanremo_df.to_excel("G:/Il mio Drive/Sanremo/sanremo_df.xlsx")
+#sanremo_df.to_excel(r"C:\Users\g.valentini\Documents\Projects\Sanremo\src\sanremo_df.xlsx")

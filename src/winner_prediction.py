@@ -14,19 +14,19 @@ from sklearn.compose import ColumnTransformer
 sanremo_df = pd.read_excel("sanremo_df.xlsx")
 
 ##Preparation
-sanremo_df.drop(['instrumentalness','Unnamed: 0'],inplace=True,axis=1)
+sanremo_df.drop(['instrumentalness','Unnamed: 0','Unnamed: 0.1'],inplace=True,axis=1)
 
 #one-hot encoding of type, sex and time_signature
 sanremo_df = pd.get_dummies(sanremo_df, columns=['sex','type'])
 sanremo_df['time_signature']=np.where(sanremo_df['time_signature']==4,1,0)
 
 ## Train-test split
-X_train = sanremo_df[sanremo_df['year']!=2021].drop(['winner','song','artist','year'],axis=1)
-y_train = sanremo_df[sanremo_df['year']!=2021]['winner']
-X_test = sanremo_df[sanremo_df['year']==2021].drop(['winner','song','artist','year'],axis=1)
-y_test = sanremo_df[sanremo_df['year']==2021]['winner']
+X_train = sanremo_df[sanremo_df['year']!=2022].drop(['winner','song','artist','year'],axis=1)
+y_train = sanremo_df[sanremo_df['year']!=2022]['winner']
+X_test = sanremo_df[sanremo_df['year']==2022].drop(['winner','song','artist','year'],axis=1)
+y_test = sanremo_df[sanremo_df['year']==2022]['winner']
 
-sanremo_df_2021 = sanremo_df[sanremo_df['year']==2021]
+sanremo_df_2022 = sanremo_df[sanremo_df['year']==2022]
 
 
 ## Pre-processing on train set --> Scaling continuous variables
@@ -52,27 +52,23 @@ from sklearn.linear_model import LogisticRegression
 def apply_log_reg(log_model):
     log_model.fit(X_train, y_train)
     pred = log_model.predict_proba(X_test)[:, 1]
-    norm_pred = pred / sum(pred)
-    sanremo_df_2021['prediction'], sanremo_df_2021['prob'] = norm_pred, pred
-    return sanremo_df_2021[['artist','prediction']].sort_values('prediction', ascending=False)
+    sanremo_df_2022['prediction'] = pred
+    return sanremo_df_2022[['artist','prediction']].sort_values('prediction', ascending=False)
 
 logmodel1 = LogisticRegression()
 prev_vincitore_logmodel = apply_log_reg(logmodel1)
 
-previsione_vincitore = sanremo_df_2021[['artist','prediction']]
-#previsione_vincitore.to_excel("C:/Users/g.valentini/Documents/Sanremo/previsione_vincitore.xlsx")
 
-## SVM
-from sklearn.svm import SVC
+## Add follower multiplier
 
-def apply_svc(svc_model):
-    svc_model.fit(X_train, y_train)
-    pred = svc_model.predict_proba(X_test)[:, 1]
-    norm_pred = pred / sum(pred)
-    sanremo_df_2021['prediction'], sanremo_df_2021['prob'] = norm_pred, pred
-    return sanremo_df_2021[['artist','prediction']].sort_values('prediction', ascending=False)
+def follower_function(x):
+    return -np.exp(-1.5*x)+2
 
-svc1=SVC(probability=True) #Default hyperparameters
-svc2=SVC(kernel='rbf', probability=True)
-prev_vincitore_svc = apply_svc(svc1)
-prev_vincitore_svc2 = apply_svc(svc2)
+# import and merge data of instagram followers for each artist
+artist_follower = pd.read_excel("artist_followers_2022.xlsx")
+sanremo_df_2022 = pd.merge(sanremo_df_2022,artist_follower,on='artist')
+
+# add mulitplier
+sanremo_df_2022['multiplier']=follower_function(sanremo_df_2022['followers'])
+sanremo_df_2022['pred_corrected']=sanremo_df_2022['prediction']*sanremo_df_2022['multiplier']/sum(sanremo_df_2022['prediction']*sanremo_df_2022['multiplier'])
+#sanremo_df_2022[['artist','pred_corrected']].to_excel(r"C:\Users\g.valentini\Documents\Projects\Sanremo\src\previsione_vincitore.xlsx")
