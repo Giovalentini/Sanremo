@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.compose import ColumnTransformer
+
 sanremo_df = pd.read_excel("sanremo_df.xlsx")
 
 ##Preparation
