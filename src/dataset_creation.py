@@ -115,22 +115,41 @@ sanremo_df = extract_song_features(ids_list=ids_list)
 #there's one track_id which doesn't work - 4WJVLEkcMMV2tHo1Bd65VN
 
 #add winner column - first of each playlist is a winner except for 2021
-bigs_per_year_cum = np.cumsum(bigs_per_year)
-sanremo_df['winner']=0
-for i in range(len(sanremo_df)):
-    if i in bigs_per_year_cum:
-        sanremo_df.loc[i,'winner'] = 1
+def add_winner(df):
+    '''
+    Add winner column  - first of each playlist is a winner except for 2021
+    '''
+    bigs_per_year_cum = np.cumsum(bigs_per_year)
+    df['winner']=0
+
+    for i in range(len(df)):
+        if i in bigs_per_year_cum:
+            df.loc[i,'winner'] = 1
+
+    return df
+
+sanremo_df = add_winner(sanremo_df)
 
 #add title and artist
-unique_track_list = []
-unique_artist_list = []
-for l1,l2 in zip(track_list,artist_list):
-    for track,artist in zip(l1,l2):
-        unique_track_list.append(track)
-        unique_artist_list.append(artist)
+def add_title_and_artist(df):
+    '''
+    Add title and artist to sanremo dataframe
+    '''
+    unique_track_list = []
+    unique_artist_list = []
 
-sanremo_df['song']=unique_track_list
-sanremo_df['artist']=unique_artist_list
+    for l1,l2 in zip(track_list,artist_list):
+        for track,artist in zip(l1,l2):
+            unique_track_list.append(track)
+            unique_artist_list.append(artist)
+
+    # add columns
+    df['song']=unique_track_list
+    df['artist']=unique_artist_list
+
+    return df 
+
+sanremo_df = add_title_and_artist(sanremo_df)
 
 #add 2021 winner
 #sanremo_df.loc[sanremo_df['song']=='ZITTI E BUONI','winner']=1
