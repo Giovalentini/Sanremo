@@ -45,6 +45,7 @@ nodeLanguageServer.*/**
 .ipynb_checkpoints
 *.pickle
 *.png
+*.xlsx
 
 service_account_key.json
 
