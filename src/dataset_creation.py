@@ -92,4 +92,4 @@ if __name__ == "__main__":
     with open("sanremo_df.pkl", "wb") as f:
         pickle.dump(sanremo_df, f)
 
-    #sanremo_df.to_excel(r"C:\Users\valen\Documents\Projects\Sanremo\src\sanremo_df.xlsx", index=False)
+    sanremo_df.to_excel("../data/sanremo_df.xlsx", index=False)

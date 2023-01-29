@@ -115,8 +115,6 @@ class SanremoDatasetCreator:
         unique_artist_list = []
         unique_count_list = []
 
-        print(track_list)
-        print(artist_count)
         for l1,l2,l3 in zip(track_list,artist_list,artist_count):
             for track,artist,count in zip(l1,l2,l3):
                 unique_track_list.append(track)
