@@ -12,9 +12,7 @@ app = dash.Dash()
 
 # Get a list of column names for the dropdown menu
 column_options = df.columns
-# Get the data types of all columns
 column_dtypes = df.dtypes
-# Filter out the columns that are not numeric
 numeric_columns = [col for col in column_options if column_dtypes[col] != 'object']
 
 app.layout = html.Div([
@@ -36,7 +34,7 @@ def render_content(tab):
                 dcc.Dropdown(
                     id='x-variable',
                     options=[{'label': col, 'value': col} for col in numeric_columns],
-                    value=None
+                    value='acousticness'
                 )
             ], style={'width': '48%', 'display': 'inline-block'}),
             html.Div([
@@ -44,14 +42,18 @@ def render_content(tab):
                 dcc.Dropdown(
                     id='y-variable',
                     options=[{'label': col, 'value': col} for col in numeric_columns],
-                    value=None
+                    value='danceability'
                 )
             ], style={'width': '48%', 'display': 'inline-block'}),
             html.Div([
                 html.Label('Year'),
                 dcc.Dropdown(
                     id='year',
-                    options=[{'label': 'All', 'value': 'all'}]+[{'label': col, 'value': col} for col in df['year'].unique()],
+                    options=[
+                        {'label': 'All', 'value': 'all'}
+                    ]+[
+                        {'label': col, 'value': col} for col in df['year'].unique()
+                    ],
                     value='all'
                 )
             ], style={'width': '48%', 'display': 'inline-block'}),
@@ -63,7 +65,7 @@ def render_content(tab):
             dcc.Dropdown(
                 id='average-variable',
                 options=[{'label': col, 'value': col} for col in df.select_dtypes(include=['float64','int64']).columns],
-                value=None
+                value='danceability'
             ),
             dcc.Graph(id='average-evolution')
         ], style={'width': '48%', 'display': 'inline-block'})    
