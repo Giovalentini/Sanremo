@@ -91,7 +91,7 @@ class SanremoDatasetCreator:
         Add winner column  - first of each playlist is a winner
         """
         bigs_per_year_cum = np.cumsum(self.bigs_per_year)
-        bigs_per_year_cum = np.append(bigs_per_year_cum, 0)
+        bigs_per_year_cum = np.sort(np.append(bigs_per_year_cum, 0))
         df['winner']=0
 
         for i in range(len(df)):
