@@ -1,10 +1,6 @@
 #import libraries
 import logging
-import numpy as np
-import pandas as pd
 import pickle
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
 from utils import SanremoDatasetCreator
 
 #setup of spotify API
@@ -34,8 +30,10 @@ lista_uri=['spotify:playlist:3a67CvngL5t42BVvLgg8u5',
 start_year=2010
 end_year = start_year + len(lista_uri) - 1
 years=[i for i in reversed(range(start_year,end_year+1))]
-bigs_per_year = (24,26,24,24,19,22,18,17,11,13,14,14,14)
+bigs_per_year = (24,26,24,24,19,22,18,17,11,13,14,14,14) #also considers non-existing songs in spotify
 tot_years = len(lista_uri)
+
+# TODO: find ordered playlist by final standing for 2019-2020,2022
 
 def main():
     """
@@ -89,7 +87,7 @@ if __name__ == "__main__":
     #artist_sex_type = pd.read_excel(r"C:\Users\g.valentini\Documents\Projects\Sanremo\src\artist_sex_type.xlsx")
     #sanremo_df = pd.merge(sanremo_df,artist_sex_type,on=['song','artist'])
 
-    with open("sanremo_df.pkl", "wb") as f:
+    with open("../data/sanremo_df.pkl", "wb") as f:
         pickle.dump(sanremo_df, f)
 
     sanremo_df.to_excel("../data/sanremo_df.xlsx", index=False)
